@@ -1,0 +1,32 @@
+{
+    "Projects": [
+        {
+            "Name": "jygl-workStation-backend",
+            "Type": "java",
+            "BuildCommands": [
+                "$env:PATH = \"H:\\develop\\apache-maven-3.9.9\\bin;\" + $env:PATH",
+                "$env:JAVA_HOME = \"H:\\develop\\jdk-17\"",
+                "cd H:\\code\\jygl-workstation-backend",
+                "mvn clean package -DskipTests"
+            ]
+        },
+        {
+            "Name": "eureka-server",
+            "Type": "java",
+            "BuildCommands": [
+                "$env:PATH = \"H:\\develop\\apache-maven-3.9.9\\bin;\" + $env:PATH",
+                "$env:JAVA_HOME = \"H:\\develop\\jdk-17\"",
+                "cd H:\\code\\eureka-server",
+                "mvn clean package -DskipTests"
+            ]
+        },
+        {
+            "Name": "jygl-frontend",
+            "Type": "vue",
+            "BuildCommands": [
+                "pnpm run build"
+            ],
+            "OutputDir": "./"
+        }
+    ]
+}
