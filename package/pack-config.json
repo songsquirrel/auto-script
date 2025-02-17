@@ -26,7 +26,7 @@
             "BuildCommands": [
                 "pnpm run build"
             ],
-            "OutputDir": "./"
+            "DistName": "./"
         }
     ]
 }
