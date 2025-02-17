@@ -66,6 +66,7 @@ try {
     Remove-Directory $packagePath
 
     $jobs = @()
+    $throttleLimit = 6 # 设置最大并行数
     foreach ($project in $matchingProjects) {
         $jobs += Start-Job -Name $project.Name -InitializationScript {
             function Invoke-Command($command, $projectName) {
@@ -112,7 +113,7 @@ try {
             } catch {
                 throw "Error building project $($project.Name): $_"
             }
-        } -ArgumentList $project, $packagePath
+        } -ArgumentList $project, $packagePath -ThrottleLimit $throttleLimit
     }
 
     # 等待所有任务完成
