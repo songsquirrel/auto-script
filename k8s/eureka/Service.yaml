@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka-internal
+spec:
+  clusterIP: None  # Headless模式
+  ports:
+    - port: 17001
+      name: http
+  selector:
+    app: eureka

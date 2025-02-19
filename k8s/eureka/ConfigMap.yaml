@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-eureka
+data:
+  application.yml: |
+    server:
+      port: 17001
+    eureka:
+      instance:
+        hostname: ${POD_NAME}.eureka-internal  # 使用Pod名称作为主机名
+      client:
+        registerWithEureka: true
+        fetchRegistry: true
+        serviceUrl:
+          defaultZone: http://eureka-0.eureka-internal:17001/eureka/,http://eureka-1.eureka-internal:17001/eureka/,http://eureka-2.eureka-internal:17001/eureka/

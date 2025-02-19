@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eureka
+spec:
+  serviceName: eureka-internal  # 关联Headless Service
+  replicas: 3 
+  selector:
+    matchLabels:
+      app: eureka
+  template:
+    metadata:
+      labels:
+        app: eureka
+    spec:
+      containers:
+        - name: eureka
+          image: my-registry/eureka-server:latest
+          ports:
+            - containerPort: 17001
+          env:
+            - name: POD_NAME  # 注入Pod名称用于配置hostname
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+          livenessProbe: # 存活探测
+            httpGet:
+              path: /actuator/health
+              port: 17001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe: # 就绪探测
+            httpGet:
+              path: /actuator/info
+              port: 17001
+            initialDelaySeconds: 20 # 容器启动后延迟多少秒开始第一次探测。
+            periodSeconds: 5 # 探测周期，单位秒。
+      volumes:
+        - name: config
+          configMap:
+            name: config-eureka
