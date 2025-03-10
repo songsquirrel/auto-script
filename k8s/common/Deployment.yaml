@@ -1,0 +1,89 @@
+# 定义一个 Deployment 来管理应用的 Pod 
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: java-app-deployment 
+  labels:
+    app: java-app 
+spec:
+  replicas: 2  # 设置副本数量 
+  selector:
+    matchLabels:
+      app: zuul 
+  template:
+    metadata:
+      labels:
+        app: zuul 
+    spec:
+      containers:
+        - name: java-app 
+          image: your-java-app-image:latest  # 替换为你的 Java 应用镜像 
+          ports:
+            - containerPort: 17002  # 应用的监听端口 
+          env:
+            - name: JAVA_OPTS  # 设置 JVM 参数（可选）
+              value: "-Xmx512m -Xms256m"
+            - name: APP_ENV  # 自定义环境变量（可选）
+              value: "production"
+          volumeMounts:
+            - name: config-volume 
+              mountPath: "/app/config"  # 配置文件挂载路径 
+              readOnly: true 
+      volumes:
+        - name: config-volume 
+          configMap:
+            name: config-zuul  # 引用 ConfigMap（可选）
+      livenessProbe:  # 健康检查（可选）
+        httpGet:
+          path: /actuator/health 
+          port: 16002 
+        initialDelaySeconds: 30 
+        periodSeconds: 10 
+      readinessProbe:  # 就绪检查（可选）
+        httpGet:
+          path: /actuator/health 
+          port: 16002 
+        initialDelaySeconds: 10 
+        periodSeconds: 5 
+ 
+# 定义一个 Service 来暴露应用 
+---
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: java-app-service 
+spec:
+  selector:
+    app: java-app 
+  ports:
+    - protocol: TCP 
+      port: 8080 
+      targetPort: 8080 
+  type: NodePort  # 或者 LoadBalancer，根据需求选择 
+ 
+# 定义一个 ConfigMap（可选）
+---
+apiVersion: v1 
+kind: ConfigMap 
+metadata:
+  name: java-app-config 
+data:
+  application.properties:  |
+    server.port=8080  
+    spring.application.name=my-java-app  
+    # 其他配置...
+ 
+# 定义一个 Horizontal Pod Autoscaler（可选）
+---
+apiVersion: autoscaling/v1 
+kind: HorizontalPodAutoscaler 
+metadata:
+  name: java-app-hpa 
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1 
+    kind: Deployment 
+    name: java-app-deployment 
+  minReplicas: 1 
+  maxReplicas: 5 
+  targetCPUUtilizationPercentage: 50 
