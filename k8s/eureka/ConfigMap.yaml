@@ -7,8 +7,14 @@ data:
     server:
       port: 17001
     eureka:
+      server:
+        enableSelfPreservation: false  # 关闭自我保护机制
+        evictionIntervalTimerInMs: 5000  # 主动失效检测间隔
+        useReadOnlyResponseCache: false 
       instance:
         hostname: ${POD_NAME}.eureka-internal  # 使用Pod名称作为主机名
+        leaseRenewalIntervalInSeconds: 5  # 心跳间隔
+        leaseExpirationDurationInSeconds: 10  # 失去心跳淘汰时间
       client:
         registerWithEureka: true
         fetchRegistry: true
