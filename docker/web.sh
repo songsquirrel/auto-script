@@ -21,6 +21,14 @@ docker run \
 -d nginx:stable-perl
 
 # postgres
+docker run -d \
+  --name postgres \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=test123 \
+  -e POSTGRES_DB=work_logging \
+  -p 15432:5432 \
+  -v /data/postgresql:/var/lib/postgresql/data \
+  postgres:latest
 
 
 
